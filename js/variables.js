@@ -1,0 +1,1 @@
+const VALID_NAME = "admin";
