@@ -1,37 +1,85 @@
-const autos = [];
+const autos = []
 
-const btnLogin = document.getElementById("btn");
+const nombre = localStorage.getItem("usuario") ? localStorage.getItem("usuario") : "";
 
-btnLogin.addEventListener("click", () => {
-    const nombre = nombreVisitante.value;
-    if (!isUser(nombre)) {
-        const mensajeError = document.getElementById("notificacion");
-        mensajeError.innerHTML = `
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            El usuario <strong>${nombre}</strong> no se encuentra autorizado.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        `;
-    } else {
+window.onload = function() {
+    const userCheck = localStorage.getItem("usuario");
+    if (userCheck == "admin") {
 
-        const login = document.getElementById("login");
-        login.removeChild(loginBox);
+        const getContainer = document.querySelector(".container");
 
-        const bienvenida = document.getElementById("mensajeBienvenida");
-        bienvenida.textContent = `Bienvenido/a ${nombre}`;
+        const h2 = document.createElement("h2");
+        h2.textContent = `Bienvenido/a ${nombre}`;
+        getContainer.appendChild(h2);
 
-        const mensajeAlerta = document.getElementById("notificacion");
-        mensajeAlerta.innerHTML = `
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            El usuario <strong>${nombre}</strong> se encuentra autorizado.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        `;
+        mostrarAlerta("success", `El usuario <strong>${nombre}</strong> se encuentra autorizado.`);
 
         mostrarOpciones();
 
+    } else {
+        loginCreate();
+        login();
     }
-});
+};
+
+function loginCreate() {
+    const main = document.getElementById("main");
+    main.className = "fullscreen";
+
+    const div = document.createElement("div");
+    div.setAttribute("id", "login");
+    div.className = "loginBox";
+    const divLogo = document.createElement("div")
+    divLogo.classList.add("logo");
+    const loginBox = document.createElement("div");
+    loginBox.className = "login";
+    loginBox.innerHTML = `
+    <div class="container">
+        <div class="row">
+            <h3>Ingresar al Sistema</h3>
+            <div class="row">
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nombreVisitante" placeholder="Para ingresar el usuario es admin">
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-primary" id="btn">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+
+    main.appendChild(div);
+    div.appendChild(divLogo)
+    div.appendChild(loginBox);
+};
+
+function login() {
+
+    const btnLogin = document.getElementById("btn");
+
+    btnLogin.addEventListener("click", () => {
+        localStorage.setItem("usuario", nombreVisitante.value);
+        const usuarioLocalStorage = localStorage.getItem("usuario");
+
+        if (!isUser(usuarioLocalStorage)) {
+            mostrarAlerta("error", `El usuario <strong>${nombre}</strong> no se encuentra autorizado.`);
+        } else {
+            const main = document.getElementById("main");
+            main.classList.remove("fullscreen");
+
+            const login = document.getElementById("login");
+            main.removeChild(login);
+
+            const bienvenida = document.getElementById("mensajeBienvenida");
+            bienvenida.textContent = `Bienvenido/a ${nombre}`;
+
+            mostrarAlerta("success", `El usuario <strong>${nombre}</strong> se encuentra autorizado.`);
+
+            mostrarOpciones();
+        }
+    });
+}
 
 function mostrarOpciones() {
     const opciones = ["Nuevo ingreso", "Ver Autos", "Autos Reparados", "Autos sin reparar", "Salir"];
@@ -42,7 +90,7 @@ function mostrarOpciones() {
         if (opcion === "Salir") {
             boton.className = "btn btn-danger m-1";
         } else {
-            boton.className = "btn btn-primary m-1";
+            boton.className = "btn btn-dark m-1";
         }
 
         opcionesUsuario = document.getElementById("opcionesUsuario");
@@ -58,7 +106,7 @@ function mostrarOpciones() {
             } else if (opcion === "Autos sin reparar") {
                 verAutosSinReparar();
             } else if (opcion === "Salir") {
-                location.reload();
+                salir();
             }
         });
 
@@ -68,9 +116,6 @@ function mostrarOpciones() {
 function nuevoIngreso() {
     const menuUsuario = document.getElementById("opcionesUsuario");
     menuUsuario.setAttribute("style", "display: none");
-
-    const listResult = document.getElementById("listResult");
-    listResult.innerHTML = "";
 
     const containerMain = document.querySelector(".container");
     const divMain = document.createElement("div");
@@ -127,13 +172,7 @@ function nuevoIngreso() {
         const auto = new Auto(nombre, marca, modelo, dominio, odometro);
         autos.push(auto);
 
-        const mensajeAlerta = document.getElementById("notificacion");
-        mensajeAlerta.innerHTML = `
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            Auto agregado correctamente
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        `;
+        mostrarAlerta("success", `<strong>¡Listo!</strong> Se cargó correctamente.`);
 
         const menuUsuario = document.getElementById("opcionesUsuario");
         menuUsuario.setAttribute("style", "display: block");
@@ -144,7 +183,10 @@ function nuevoIngreso() {
 }
 
 function verAutos(arrayAutos) {
-    const listResult = document.getElementById("listResult");
+    const container = document.querySelector(".container");
+    const listResult = document.createElement("div")
+    listResult.setAttribute("id", "listResult");
+
     listResult.innerHTML = "";
 
     for (let auto of autos) {
@@ -164,6 +206,7 @@ function verAutos(arrayAutos) {
                 <button class="btn btn-info btn-sm" id="reparar">Marcar como reparado</button>
             </div>
         `;
+        container.appendChild(listResult);
         listResult.appendChild(card);
     }
 }
@@ -171,8 +214,6 @@ function verAutos(arrayAutos) {
 function verAutosSinReparar(arrayAutos) {
     const listResult = document.getElementById("listResult");
     listResult.innerHTML = "";
-
-    const mensajeAlerta = document.getElementById("notificacion");
 
     let contador = 0;
 
@@ -193,22 +234,36 @@ function verAutosSinReparar(arrayAutos) {
                 </div>
             `;
             listResult.appendChild(card);
-            contador++;
         }
     }
-    if (contador !== 0) {
+}
+
+function mostrarAlerta(status, mensaje) {
+    const main = document.getElementById("main");
+    if (status == "success") {
+        const mensajeAlerta = document.createElement("div");
+        mensajeAlerta.setAttribute("role", "alert");
+        mensajeAlerta.setAttribute("id", "mensajeAlerta");
+        mensajeAlerta.classList.add("container", "alert", "alert-success", "alert-dismissible", "fade", "show", "mt-3")
         mensajeAlerta.innerHTML = `
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-               Hay ${contador} auto/s sin reparar
+                ${mensaje}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
             `;
+        main.appendChild(mensajeAlerta);
     } else {
+        const mensajeAlerta = document.createElement("div");
+        mensajeAlerta.setAttribute("role", "alert");
+        mensajeAlerta.setAttribute("id", "mensajeAlerta");
+        mensajeAlerta.classList.add("container", "alert", "alert-danger", "alert-dismissible", "fade", "show", "mt-3")
         mensajeAlerta.innerHTML = `
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                No hay autos sin reparar
+                ${mensaje}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
             `;
+        main.appendChild(mensajeAlerta);
     }
+}
+
+function salir() {
+    localStorage.removeItem("usuario");
+    location.reload();
 }
