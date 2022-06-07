@@ -63,22 +63,25 @@ function login() {
     btnLogin.addEventListener("click", () => {
         localStorage.setItem("usuario", nombreVisitante.value);
         const usuarioLocalStorage = localStorage.getItem("usuario");
-
-        if (!isUser(usuarioLocalStorage)) {
-            mostrarAlerta("error", `El usuario <strong>${nombre}</strong> no se encuentra autorizado.`);
-        } else {
+        if ((isUser(usuarioLocalStorage))) {
             const main = document.getElementById("main");
             main.classList.remove("fullscreen");
 
             const login = document.getElementById("login");
             main.removeChild(login);
 
-            const bienvenida = document.getElementById("mensajeBienvenida");
-            bienvenida.textContent = `Bienvenido/a ${nombre}`;
+            const getContainer = document.querySelector(".container");
 
-            mostrarAlerta("success", `El usuario <strong>${nombre}</strong> se encuentra autorizado.`);
+            const h2 = document.createElement("h2");
+            h2.textContent = `Bienvenido/a ${usuarioLocalStorage}`;
+            getContainer.appendChild(h2);
+
+            mostrarAlerta("success", `El usuario <strong>${usuarioLocalStorage}</strong> se encuentra autorizado.`);
 
             mostrarOpciones();
+
+        } else {
+            mostrarAlerta("error", `El usuario <strong>${usuarioLocalStorage}</strong> no se encuentra autorizado.`);
         }
     });
 }
