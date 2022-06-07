@@ -14,5 +14,7 @@
     height: 100px;
     justify-content: center;
     align-items: center;
+    background-position: center;
+    background-repeat: no-repeat;
     background-image: url('/assets/img/logo-white.png');
 }

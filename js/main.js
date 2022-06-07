@@ -2,7 +2,9 @@ const autos = []
 
 const nombre = localStorage.getItem("usuario") ? localStorage.getItem("usuario") : "";
 
-window.onload = function() {
+window.onload = init();
+
+function init() {
     const userCheck = localStorage.getItem("usuario");
     if (userCheck == "admin") {
 
@@ -20,7 +22,7 @@ window.onload = function() {
         loginCreate();
         login();
     }
-};
+}
 
 function loginCreate() {
     const main = document.getElementById("main");
