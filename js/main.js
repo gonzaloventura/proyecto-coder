@@ -14,7 +14,7 @@ function init() {
         h2.textContent = `Bienvenido/a ${nombre}`;
         getContainer.appendChild(h2);
 
-        mostrarAlerta("success", `El usuario <strong>${nombre}</strong> se encuentra autorizado.`);
+        mostrarAlerta("success", `El usuario ${nombre} se encuentra autorizado.`);
 
         mostrarOpciones();
 
@@ -76,12 +76,12 @@ function login() {
             h2.textContent = `Bienvenido/a ${usuarioLocalStorage}`;
             getContainer.appendChild(h2);
 
-            mostrarAlerta("success", `El usuario <strong>${usuarioLocalStorage}</strong> se encuentra autorizado.`);
+            mostrarAlerta("success", `El usuario ${usuarioLocalStorage} se encuentra autorizado.`);
 
             mostrarOpciones();
 
         } else {
-            mostrarAlerta("error", `El usuario <strong>${usuarioLocalStorage}</strong> no se encuentra autorizado.`);
+            mostrarAlerta("error", `El usuario ${usuarioLocalStorage} no se encuentra autorizado.`);
         }
     });
 }
@@ -114,7 +114,6 @@ function mostrarOpciones() {
                 salir();
             }
         });
-
     });
 }
 
@@ -177,7 +176,7 @@ function nuevoIngreso() {
         const auto = new Auto(nombre, marca, modelo, dominio, odometro);
         autos.push(auto);
 
-        mostrarAlerta("success", `<strong>¡Listo!</strong> Se cargó correctamente.`);
+        mostrarAlerta("success", `Se cargó correctamente.`);
 
         const menuUsuario = document.getElementById("opcionesUsuario");
         menuUsuario.setAttribute("style", "display: block");
@@ -246,29 +245,44 @@ function verAutosSinReparar(arrayAutos) {
 function mostrarAlerta(status, mensaje) {
     const main = document.getElementById("main");
     if (status == "success") {
-        const mensajeAlerta = document.createElement("div");
-        mensajeAlerta.setAttribute("role", "alert");
-        mensajeAlerta.setAttribute("id", "mensajeAlerta");
-        mensajeAlerta.classList.add("container", "alert", "alert-success", "alert-dismissible", "fade", "show", "mt-3")
-        mensajeAlerta.innerHTML = `
-                ${mensaje}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-        main.appendChild(mensajeAlerta);
+        sweetAlertSuccess(mensaje);
     } else {
-        const mensajeAlerta = document.createElement("div");
-        mensajeAlerta.setAttribute("role", "alert");
-        mensajeAlerta.setAttribute("id", "mensajeAlerta");
-        mensajeAlerta.classList.add("container", "alert", "alert-danger", "alert-dismissible", "fade", "show", "mt-3")
-        mensajeAlerta.innerHTML = `
-                ${mensaje}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-        main.appendChild(mensajeAlerta);
+        sweetAlertError(mensaje);
     }
 }
 
 function salir() {
     localStorage.removeItem("usuario");
-    location.reload();
+    mostrarAlerta("success", "Se ha cerrado la sesión");
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 1000);
+}
+
+function repararAuto(arrayAutos) {
+    const btnReparar = document.getElementById("reparar");
+    btnReparar.addEventListener("click", () => {
+        const auto = autos[0];
+        auto.reparado = true;
+        mostrarAlerta("success", `Se marcó como reparado.`);
+        verAutosSinReparar(autos);
+    });
+}
+
+function sweetAlertSuccess(mensaje) {
+    Swal.fire({
+        title: '¡Listo!',
+        text: mensaje,
+        icon: 'success',
+        confirmButtonText: 'Ok'
+    });
+}
+
+function sweetAlertError(mensaje) {
+    Swal.fire({
+        title: '¡Error!',
+        text: mensaje,
+        icon: 'error',
+        confirmButtonText: 'Ok'
+    });
 }
